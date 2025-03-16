@@ -1,4 +1,4 @@
-//LIB
+
 #include "Arduino.h"
 #include "TFT_eSPI.h"
 #include "img_logo.h"
@@ -8,21 +8,14 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 
-
-//DEF
 #define LCD_MODULE_CMD_1
-//INIT
-TFT_eSPI tft = TFT_eSPI(); // Initialize the display
+
+TFT_eSPI tft = TFT_eSPI();
 
 WebServer server(80);
 
-//VAR
 const char *ssid     = "SSID_NAME";
 const char *password = "AUTH_WIFI_KEY";
-
-
-
-
 
 #if defined(LCD_MODULE_CMD_1)
 typedef struct {
@@ -48,11 +41,6 @@ lcd_cmd_t lcd_st7789v[] = {
 };
 #endif
 
-
-
-
-
-
 void setup() {
 
     Serial.begin(115200);
@@ -60,16 +48,15 @@ void setup() {
 
     pinMode(PIN_POWER_ON, OUTPUT);
     digitalWrite(PIN_POWER_ON, HIGH);
-
-
+    
     tft.begin();
+    
 #if defined(LCD_MODULE_CMD_1)
     for (uint8_t i = 0; i < (sizeof(lcd_st7789v) / sizeof(lcd_cmd_t)); i++) {
         tft.writecommand(lcd_st7789v[i].cmd);
         for (int j = 0; j < (lcd_st7789v[i].len & 0x7f); j++) {
             tft.writedata(lcd_st7789v[i].data[j]);
         }
-
         if (lcd_st7789v[i].len & 0x80) {
             delay(120);
         }
@@ -80,7 +67,7 @@ void setup() {
     tft.setRotation(3);
     tft.setSwapBytes(true);
     tft.pushImage(0, 0, 320, 170, (uint16_t *)img_logo);
-    delay(1000);
+    delay(2000);
 
 #if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(5,0,0)
     ledcSetup(0, 2000, 8);
@@ -97,7 +84,7 @@ void setup() {
   tft.fillScreen(TFT_BLACK);      
   tft.setTextColor(TFT_GREEN);     
 
-   // Connect to Wi-Fi network
+
    WiFi.begin(ssid, password);
    while (WiFi.status() != WL_CONNECTED) {
      delay(1000);
@@ -108,11 +95,11 @@ void setup() {
    Serial.print("IP address: ");
    Serial.println(WiFi.localIP());
  
-   // Set up the routes for handling HTTP requests
+  
    server.on("/", handleRoot);
    server.on("/sendtext", handleText);
  
-   // Start the server
+
    server.begin();
    Serial.println("Server started");
   
@@ -120,7 +107,7 @@ void setup() {
 }
 
 void handleRoot() {
-  // Send the HTML form to the client
+
   String html = "<!DOCTYPE html><html><head><title>SEND TEXT TO ESP32-S3 YOUNG LEADER !</title></head><body><h1>SEND TEXT TO ESP32-S3 YOUNG LEADER !</h1><form method='post' action='/sendtext'><label for='text'>Enter text:</label><input type='text' name='text' id='text' required><br><button type='submit'>Send</button></form></body></html>";
   server.send(200, "text/html", html);
 }
@@ -131,7 +118,6 @@ void handleText() {
     Serial.println("Received text: " + text);
     tft.drawString(text, 12, 80, 4);
 
-    // Send a response back to the client
     server.send(200, "text/html", "<h1>Text received</h1><p>You entered: " + text + "</p>");
   } else {
     server.send(405, "text/html", "<h1>Method Not Allowed</h1>");
