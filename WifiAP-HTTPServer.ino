@@ -116,7 +116,7 @@ void setup() {
 
 void handleRoot() {
   // Send the HTML form to the client
-  String html = "<!DOCTYPE html><html><head><title>SEND TEXT TO ESP32-S3 YOUNG LEADER !</title></head><body><h1>SEND TEXT TO ESP32-S3 YOUNG LEADER !</h1><form method='post' action='/sendtext'><label for='text'>Enter text:</label><input type='text' name='text' id='text' required><br><button type='submit'>Send</button></form></body></html>";
+  String html = "<!DOCTYPE html><html><head><title>SEND TEXT TO ESP32-S3!</title></head><body><h1>SEND TEXT TO ESP32-S3!</h1><form method='post' action='/sendtext'><label for='text'>Enter text:</label><input type='text' name='text' id='text' required><br><button type='submit'>Send</button></form></body></html>";
   server.send(200, "text/html", html);
 }
 void handleText() {
